@@ -14,6 +14,12 @@ FOCUS: SGNL (pronounced "Signal") is a strategic attention-defense tool built ar
 
 ---
 
+## Working Style
+
+The project owner is a **solo entrepreneur without coding experience**. All explanations must be in plain language. Technical decisions should be explained in terms of what they mean for the user experience, not in code terms. The owner steers direction — Claude implements.
+
+---
+
 ## Key Architectural Decisions
 
 1. **Google Sheets as backend** — user can inspect their own data, no server needed
@@ -132,16 +138,26 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Switched service worker to network-first:** Assets now served fresh from network with cache as fallback, so phone users get updates immediately without manual cache clearing
 - **Bumped cache version** to `focus-v9-sgnl`
 
+### Session 8 (Mar 24) — Robustness & Drive Recovery
+- Added visible Error Log (Settings > Debug) for mobile debugging
+- All network/auth/API errors now show as toasts (no more silent failures)
+- Added `?sheet=ID` URL parameter to force correct sheet connection
+- Auto-redirect to login on token expiry
+- **Drive search recovery**: if the sheet ID is lost (cache clear, re-auth), the app now searches Google Drive for the existing "Focus" sheet before creating a new one
+- Full UX audit across all 5 user paths (see below)
+- Updated MEMORY.md with working style note (non-technical owner)
+- Bumped cache to v15
+
 ---
 
 ## Current State
 
-### PWA (`index.html` — single file, ~800 lines)
+### PWA (`index.html` — single file, ~900 lines)
 - **All 5 screens working:** Capture, Tasks, Ritual, Review, Settings
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v9-sgnl`
+- **Cache version:** `focus-v15-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -150,31 +166,107 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 
 ---
 
-## Known Issues & Gaps
+## UX Audit — 5 User Paths (Session 8)
 
-### PWA
-- [x] ~~Personal mode accent is Zen Violet~~ — switched to Moonlight Silver `#C0C0C0`
-- [ ] Chrono-ticker date selection is standard `<input type="date">` — spec calls for "Scrubbable Timeline" on desktop (future enhancement)
-- [x] ~~Tag chips in capture screen use rounded pills~~ — fixed to 3px radius, no bg fill, small-caps
-- [ ] No haptic feedback on mobile for toggle/completion (browser API limited)
-- [x] ~~Phone cache requires manual clear after updates~~ — switched SW to network-first strategy
+### Path 1: Morning Entry
+| What works | What's broken or missing |
+|---|---|
+| Ignition overlay forces intentionality | No time check — shows at 2am too, should only show after 7:00 |
+| Remembers if you already did it today | Daily focus is stored locally only — lost on cache clear |
+| Can skip if in a rush | No summary of yesterday's leftovers before setting focus |
+| | No notification/reminder to open the app |
 
-### Extension
-- [ ] Not yet rebuilt with SGNL branding in this repo
-- [ ] Extension files live outside git — should be added to repo under `extension/` directory
+### Path 2: Creating Tasks (Capture)
+| What works | What's broken or missing |
+|---|---|
+| Fast capture flow | 1.5s delay after capture before button resets |
+| Signal as default nudges intentionality | No offline queue — fails if no internet |
+| Tags and due dates work | "Add context" field is hidden — easy to miss |
+| Contextual nudge phrases change by mode | Can't capture from Ignition screen directly |
+| Stats bar shows live ratio | No quick multi-task entry |
 
-### Data/Backend
-- [x] ~~Edge requires console command to reconnect~~ — PWA now has "Change Sheet" UI in Settings
-- [ ] No offline capture support yet (PWA stores nothing locally)
+### Path 3: Viewing & Completing Tasks
+| What works | What's broken or missing |
+|---|---|
+| Ticker shows most urgent tasks first | No search or text filter |
+| Inline editing is smooth | Can't see personal + work tasks together |
+| Noise decay forces cleanup | Reorder swaps data (not true drag) — risky |
+| Tag filter (ostracize) is powerful | Done section shows ALL done tasks ever — grows forever |
+| Implosion animation feels rewarding | No way to delete a task |
+| | Task list requires internet every time — not cached |
+
+### Path 4: End-of-Day Review (Ritual — Evening)
+| What works | What's broken or missing |
+|---|---|
+| Forces deliberate end-of-day cleanup | "Close the day" doesn't record a daily log in the Sheet |
+| Delegate/ignore with reason builds decision log | Counts ALL done tasks, not just today's |
+| Stats at a glance | If you close the app, unsaved decisions are lost |
+| | Morning ritual is view-only — can't act on carried-over tasks |
+| | No check: "Did you complete your morning focus?" |
+
+### Path 5: Weekly Review
+| What works | What's broken or missing |
+|---|---|
+| Richest screen — lots of useful data | Focus score counts ALL signals ever, not just this week |
+| Radar chart gives real insight | Close Week writes incomplete data (captured counts = 0) |
+| Debrief narrative adapts to performance | No history — can't look back at previous weeks |
+| Week-over-week comparison | Aging alert dropdowns don't actually update tasks |
+| Reflection prompts are thoughtful | No "it's Friday" reminder |
+| | Reflection fields don't pre-fill from prior weeks |
 
 ---
 
-## Next Steps
+## Known Issues & Gaps
 
-1. ~~Complete PWA branding~~ — done (17/17 pillars implemented)
-2. **Build Chrome/Edge extension** — full SGNL branding, add to repo under `extension/`
-3. **Test end-to-end** — capture in extension → view on phone → ritual → review
-4. **Deploy PWA update** — merge to main, GitHub Pages auto-deploys
-5. ~~Moonlight Silver decision~~ — decided: Silver. Implemented.
-6. **Future: Email-to-task** — Gmail first, then Outlook
-7. **Future: Global keyboard shortcut** — nice-to-have, requires companion app
+### PWA — Resolved
+- [x] ~~Personal mode accent is Zen Violet~~ — switched to Moonlight Silver
+- [x] ~~Tag chips in capture screen use rounded pills~~ — fixed to 3px radius
+- [x] ~~Phone cache requires manual clear~~ — switched SW to network-first
+- [x] ~~Edge requires console command to reconnect~~ — has Change Sheet UI now
+- [x] ~~Silent errors on mobile~~ — all errors now show as toasts + Error Log
+- [x] ~~Lost sheet ID = new sheet created~~ — now searches Drive first
+
+### PWA — Open
+- [ ] Ignition shows at any hour (no 7:00 CET check)
+- [ ] No offline capture queue
+- [ ] Evening close doesn't filter by "today" — counts all done tasks
+- [ ] Evening "Close the day" doesn't save a daily log row
+- [ ] Focus score in Review counts all-time, not weekly
+- [ ] Close Week writes 0 for signals_captured and noise_captured
+- [ ] Aging alert actions in Review are visual-only — don't update tasks
+- [ ] Done section grows forever — no date filter or archive
+- [ ] No search/filter on Tasks screen
+- [ ] No task deletion
+- [ ] Morning ritual can't act on carried-over tasks
+- [ ] No "Did you complete your morning focus?" end-of-day check
+
+### Extension
+- [ ] Not yet rebuilt with SGNL branding in this repo
+
+### Data/Backend
+- [ ] No offline capture support (PWA stores nothing locally)
+
+---
+
+## Next Steps (Prioritized by UX Impact)
+
+### High Priority — Core experience is broken without these
+1. **Fix evening close to filter by today** — only show/count tasks closed today
+2. **Fix Focus Score to be weekly** — not all-time
+3. **Fix Close Week data** — write actual captured counts, not 0
+4. **Wire aging alert actions** — dropdowns in Review should actually update tasks
+5. **Add 7:00 CET time gate to Ignition** — don't show before morning
+
+### Medium Priority — Improve daily usability
+6. **Add "Did you achieve your focus?" check** at end of day
+7. **Morning ritual should allow acting on tasks** — not just viewing
+8. **Limit Done section** — show only last 7 days, or add "show more"
+9. **Add search/filter to Tasks screen**
+10. **Save daily close as a log row** in the Sheet
+
+### Lower Priority — Nice to have
+11. **Offline capture queue** — save locally, sync when online
+12. **Build Chrome/Edge extension** with SGNL branding
+13. **Friday reminder** for weekly review
+14. **Task deletion option**
+15. **Future: Email-to-task** (Gmail first, then Outlook)
