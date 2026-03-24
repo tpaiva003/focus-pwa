@@ -1,5 +1,5 @@
 // sw.js — Service Worker for Focus PWA
-const CACHE = 'focus-v16-sgnl';
+const CACHE = 'focus-v17-sgnl';
 const ASSETS = ['./'];
 
 self.addEventListener('install', e => {
