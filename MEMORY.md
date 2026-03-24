@@ -119,6 +119,9 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
     - Added small-caps to all `.tag` badges
     - Personal buttons use silver-bordered obsidian
   - Created MEMORY.md and CLAUDE.md for session continuity
+  - Built task edit panel (tap ✎ to edit name, signal/noise, tags, due date, status note)
+  - Fixed setupSheet() to initialize Weekly Review header row
+  - Merged PR #1 to main — deployed to GitHub Pages
 
 ---
 
@@ -129,7 +132,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v5-sgnl`
+- **Cache version:** `focus-v6-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
