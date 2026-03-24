@@ -99,7 +99,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - Fixed extension missing DOM IDs (tv-title-text, tv-date-text)
 - Chart logic: counts by closed_date, 7-day personal mode, week-scoped stats
 
-### Session 6 (Mar 24) — Current Session
+### Session 6 (Mar 24) — SGNL Branding & Edit Panel
 - Added superpowers skills, GSD framework, UI/UX Pro Max skills
 - Applied SGNL branding Phases 1-5 to PWA:
   - Signal tasks in Instrument Serif Italic
@@ -123,6 +123,15 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
   - Fixed setupSheet() to initialize Weekly Review header row
   - Merged PR #1 to main — deployed to GitHub Pages
 
+### Session 7 (Mar 24) — Bug Fixes & Robustness
+- **Fixed critical bug:** Missing `</span>` in `dueTag` for tasks with future due dates — caused malformed HTML that could break open task rendering
+- **Added error resilience:** `buildItem` wrapped in try-catch so individual task errors surface visibly instead of producing empty/invisible items
+- **Added null safety:** `buildEditPanel` guards against undefined `S.tags`
+- **Added Change Sheet UI:** Settings screen now has "Change Sheet →" button so users can reconnect to a different spreadsheet without needing browser console (critical for mobile)
+- **Improved error surfacing:** `loadStats` and `refreshAll` now show toast messages on failure instead of silently swallowing errors
+- **Switched service worker to network-first:** Assets now served fresh from network with cache as fallback, so phone users get updates immediately without manual cache clearing
+- **Bumped cache version** to `focus-v9-sgnl`
+
 ---
 
 ## Current State
@@ -132,7 +141,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v6-sgnl`
+- **Cache version:** `focus-v9-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -148,14 +157,14 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - [ ] Chrono-ticker date selection is standard `<input type="date">` — spec calls for "Scrubbable Timeline" on desktop (future enhancement)
 - [x] ~~Tag chips in capture screen use rounded pills~~ — fixed to 3px radius, no bg fill, small-caps
 - [ ] No haptic feedback on mobile for toggle/completion (browser API limited)
-- [ ] Phone cache requires manual clear after updates — PWA service worker caching
+- [x] ~~Phone cache requires manual clear after updates~~ — switched SW to network-first strategy
 
 ### Extension
 - [ ] Not yet rebuilt with SGNL branding in this repo
 - [ ] Extension files live outside git — should be added to repo under `extension/` directory
 
 ### Data/Backend
-- [ ] Edge requires console command to reconnect if reinstalled: `chrome.storage.local.set({spreadsheetId: '1l2JoZ7hnUXvR56_h07dsy6Z8WWlSwZKGuxkzO-qDY6o', onboardingDone: true})`
+- [x] ~~Edge requires console command to reconnect~~ — PWA now has "Change Sheet" UI in Settings
 - [ ] No offline capture support yet (PWA stores nothing locally)
 
 ---
