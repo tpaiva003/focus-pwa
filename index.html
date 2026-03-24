@@ -712,7 +712,7 @@ window.addEventListener('load',async()=>{
     S.token=tok;S.tokenExpiry=exp;S.spreadsheetId=ls('focus_spreadsheet_id');S.mode=ls('focus_mode')||'work';
     S.ignition={personal:ls('focus_ign_p')||'',work:ls('focus_ign_w')||''};
     if(!S.spreadsheetId){showMain();setupSheet();}
-    else{showMain();applyMode(S.mode,false);await loadTags();loadStats();checkIgnition();}
+    else{showMain();applyMode(S.mode,false);await loadTags();await loadStats();checkIgnition();}
   }
 });
 
@@ -763,9 +763,9 @@ function makeTagHtml(tags){if(!tags?.length)return'';return tags.map(n=>{const t
 async function readTasks(){const r=await sf(`${SHEETS}/${S.spreadsheetId}/values/Tasks!A2:N`);return(r.values||[]).map((r,i)=>({task_id:r[0]||'',task_name:r[1]||'',category:r[2]||'personal',signal_or_noise:r[3]||'signal',status:r[4]||'open',due_date:r[5]||'',comment:r[6]||'',reason:r[7]||'',source:r[8]||'manual',created_date:r[9]||'',week_number:r[10]||'',days_open:parseInt(r[11])||0,closed_date:r[12]||'',tags:r[13]?r[13].split(',').map(t=>t.trim()).filter(Boolean):[],_row:i}));}
 async function appendTask(t){t.task_id='task_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);t.created_date=todayStr();t.week_number=weekNum();t.days_open=0;t.source='mobile';t.closed_date='';t.tags=t.tags||[];await sf(`${SHEETS}/${S.spreadsheetId}/values/Tasks!A:N:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{method:'POST',body:JSON.stringify({values:[[t.task_id,t.task_name,t.category,t.signal_or_noise,t.status,t.due_date,t.comment,t.reason||'',t.source,t.created_date,t.week_number,t.days_open,t.closed_date,(t.tags||[]).join(', ')]]})});}
 async function updateTask(t){const row=t._row+2;t.days_open=Math.max(0,Math.floor((Date.now()-new Date(t.created_date))/86400000));if(['done','delegated','ignored'].includes(t.status)&&!t.closed_date)t.closed_date=todayStr();await sf(`${SHEETS}/${S.spreadsheetId}/values/Tasks!A${row}:N${row}?valueInputOption=RAW`,{method:'PUT',body:JSON.stringify({values:[[t.task_id,t.task_name,t.category,t.signal_or_noise,t.status,t.due_date,t.comment,t.reason||'',t.source,t.created_date,t.week_number,t.days_open,t.closed_date,(t.tags||[]).join(', ')]]})});}
-async function loadStats(){try{S.tasks=await readTasks();updateStats();}catch(_){}}
+async function loadStats(){try{S.tasks=await readTasks();updateStats();}catch(e){console.error('loadStats failed:',e);showToast('Failed to load: '+e.message);}}
 async function loadTasksScreen(){document.getElementById('tasks-list').innerHTML='<div class="loading-text">Loading…</div>';try{S.tasks=await readTasks();updateStats();renderTicker();renderTasks();checkDecay();}catch(e){document.getElementById('tasks-list').innerHTML=`<div class="empty-state"><strong>Error</strong>${e.message}</div>`;}}
-async function refreshAll(){showToast('Refreshing…');await loadTags();S.tasks=await readTasks().catch(()=>S.tasks);updateStats();if(document.querySelector('[data-s="tasks"].active'))renderTicker(),renderTasks();renderCapTags();showToast('Updated');}
+async function refreshAll(){showToast('Refreshing…');try{await loadTags();S.tasks=await readTasks();updateStats();if(document.querySelector('[data-s="tasks"].active'))renderTicker(),renderTasks();renderCapTags();showToast('Updated');}catch(e){console.error('Refresh failed:',e);showToast('Refresh failed: '+e.message);}}
 
 function updateStats(){const cat=S.tasks.filter(t=>t.category===S.mode);const open=cat.filter(t=>['open','in_progress'].includes(t.status));const done=cat.filter(t=>t.status==='done');const sigs=open.filter(t=>t.signal_or_noise==='signal').length,nois=open.filter(t=>t.signal_or_noise==='noise').length;const ratio=nois===0?(sigs>0?`${sigs}:0`:'—'):(sigs/nois).toFixed(1)+':1';document.getElementById('ts-sig').textContent=sigs;document.getElementById('ts-noi').textContent=nois;document.getElementById('ts-done').textContent=done.length;document.getElementById('ts-ratio').textContent=ratio;document.getElementById('sb-sig').textContent=sigs+' signals';document.getElementById('sb-noi').textContent=nois+' noise';document.getElementById('sb-ratio').textContent='ratio '+ratio;}
 
