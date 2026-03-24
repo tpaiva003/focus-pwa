@@ -747,12 +747,14 @@ const DECAY_WARN=7*86400000, DECAY_BLOCK=10*86400000;
 const S={token:null,tokenExpiry:0,spreadsheetId:null,mode:'work',tasks:[],tags:[],capTags:[],newTagColor:'#D4AF37',filter:'all',ctxOpen:false,phase:null,activeTagFilter:null,ignition:{personal:'',work:''},decayTaskId:null};
 
 // ── INIT ──────────────────────────────────
+function getSheetFromURL(){const p=new URLSearchParams(window.location.search);const s=p.get('sheet');if(s){lss('focus_spreadsheet_id',s);const clean=window.location.pathname+window.location.hash;history.replaceState(null,'',clean);}return s;}
 window.addEventListener('load',async()=>{
   if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  const urlSheet=getSheetFromURL();
   if(window.location.hash.includes('access_token')){handleCallback();return;}
   const tok=ls('focus_token'),exp=parseInt(ls('focus_token_expiry')||'0');
   if(tok&&exp>Date.now()){
-    S.token=tok;S.tokenExpiry=exp;S.spreadsheetId=ls('focus_spreadsheet_id');S.mode=ls('focus_mode')||'work';
+    S.token=tok;S.tokenExpiry=exp;S.spreadsheetId=urlSheet||ls('focus_spreadsheet_id');S.mode=ls('focus_mode')||'work';
     S.ignition={personal:ls('focus_ign_p')||'',work:ls('focus_ign_w')||''};
     if(!S.spreadsheetId){showMain();setupSheet();}
     else{showMain();applyMode(S.mode,false);await loadTags();await loadStats();checkIgnition();}
