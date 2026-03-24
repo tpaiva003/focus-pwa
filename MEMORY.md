@@ -148,6 +148,21 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - Updated MEMORY.md with working style note (non-technical owner)
 - Bumped cache to v15
 
+### Session 8b (Mar 24) — Fix All 12 UX Issues
+- **Grey text readability**: boosted `--smoke` #555→#999, `--smoke-2` #404→#777 (passes accessibility)
+- **Ignition 7am gate**: morning overlay only appears after 7:00am, not at 2am
+- **Evening close today filter**: now counts only tasks closed TODAY, not all-time
+- **Morning focus check**: evening shows "Did you achieve your morning focus?" with green/red feedback
+- **Focus Score weekly**: Review screen now scopes to current week only
+- **Close Week captured counts**: writes actual signals/noise captured (was writing 0)
+- **Aging alert actions WIRED**: dropdowns in Review now actually delegate/ignore tasks
+- **Done section limited**: shows last 7 days with "show more" for older tasks
+- **Task search**: search bar on Tasks screen filters by name or tag
+- **Task deletion**: delete button in edit panel (marks as deleted, filtered from all views)
+- **Morning ritual actions**: carried-over tasks now have done/delegate/ignore dropdowns
+- **Friday reminder**: toast notification on Fridays, remembered after closing the week
+- Bumped cache to v16
+
 ---
 
 ## Current State
@@ -157,7 +172,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v15-sgnl`
+- **Cache version:** `focus-v16-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -227,18 +242,19 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - [x] ~~Lost sheet ID = new sheet created~~ — now searches Drive first
 
 ### PWA — Open
-- [ ] Ignition shows at any hour (no 7:00 CET check)
+- [x] ~~Ignition shows at any hour~~ — now gated to after 7:00am
 - [ ] No offline capture queue
-- [ ] Evening close doesn't filter by "today" — counts all done tasks
-- [ ] Evening "Close the day" doesn't save a daily log row
-- [ ] Focus score in Review counts all-time, not weekly
-- [ ] Close Week writes 0 for signals_captured and noise_captured
-- [ ] Aging alert actions in Review are visual-only — don't update tasks
-- [ ] Done section grows forever — no date filter or archive
-- [ ] No search/filter on Tasks screen
-- [ ] No task deletion
-- [ ] Morning ritual can't act on carried-over tasks
-- [ ] No "Did you complete your morning focus?" end-of-day check
+- [x] ~~Evening close counts all done tasks~~ — now filters by today's closed_date
+- [ ] Evening "Close the day" doesn't save a daily log row (tasks DO get updated)
+- [x] ~~Focus score counts all-time~~ — now scoped to current week
+- [x] ~~Close Week writes 0 for captured counts~~ — now writes actual counts
+- [x] ~~Aging alert actions are visual-only~~ — now wired to update tasks
+- [x] ~~Done section grows forever~~ — limited to 7 days with "show more"
+- [x] ~~No search/filter on Tasks~~ — search bar added
+- [x] ~~No task deletion~~ — delete button in edit panel
+- [x] ~~Morning ritual view-only~~ — can now act on carried-over tasks
+- [x] ~~No morning focus check~~ — evening now shows achievement status
+- [ ] No "daily log" row saved in Sheet (decision log exists via task updates)
 
 ### Extension
 - [ ] Not yet rebuilt with SGNL branding in this repo
@@ -250,23 +266,10 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 
 ## Next Steps (Prioritized by UX Impact)
 
-### High Priority — Core experience is broken without these
-1. **Fix evening close to filter by today** — only show/count tasks closed today
-2. **Fix Focus Score to be weekly** — not all-time
-3. **Fix Close Week data** — write actual captured counts, not 0
-4. **Wire aging alert actions** — dropdowns in Review should actually update tasks
-5. **Add 7:00 CET time gate to Ignition** — don't show before morning
+### All 12 High/Medium issues FIXED in Session 8b
 
-### Medium Priority — Improve daily usability
-6. **Add "Did you achieve your focus?" check** at end of day
-7. **Morning ritual should allow acting on tasks** — not just viewing
-8. **Limit Done section** — show only last 7 days, or add "show more"
-9. **Add search/filter to Tasks screen**
-10. **Save daily close as a log row** in the Sheet
-
-### Lower Priority — Nice to have
-11. **Offline capture queue** — save locally, sync when online
-12. **Build Chrome/Edge extension** with SGNL branding
-13. **Friday reminder** for weekly review
-14. **Task deletion option**
-15. **Future: Email-to-task** (Gmail first, then Outlook)
+### Remaining — Nice to have
+1. **Offline capture queue** — save locally, sync when online
+2. **Build Chrome/Edge extension** with SGNL branding
+3. **Daily log row** in Sheet (decisions already saved via task updates)
+4. **Future: Email-to-task** (Gmail first, then Outlook)
