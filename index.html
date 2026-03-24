@@ -420,6 +420,19 @@
     .empty-state strong{display:block;font-size:15px;margin-bottom:4px;color:#fff}
     .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(26,26,27,.98);color:#fff;border:0.5px solid var(--basalt-2);backdrop-filter:blur(20px);padding:10px 20px;border-radius:20px;font-size:13px;font-family:var(--sans);opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* ERROR LOG OVERLAY */
+    .errlog-overlay{position:fixed;inset:0;z-index:9000;background:rgba(5,5,5,.97);backdrop-filter:blur(20px);display:none;flex-direction:column;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+    .errlog-overlay.active{display:flex}
+    .errlog-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:0.5px solid var(--basalt)}
+    .errlog-title{font-size:12px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--danger)}
+    .errlog-close{background:none;border:0.5px solid var(--basalt-2);border-radius:6px;padding:6px 14px;font-family:var(--sans);font-size:12px;color:var(--smoke);cursor:pointer}
+    .errlog-body{flex:1;overflow-y:auto;padding:12px 16px;-webkit-overflow-scrolling:touch}
+    .errlog-entry{padding:10px 12px;margin-bottom:6px;border-radius:6px;border-left:2px solid var(--danger);background:rgba(239,68,68,.06);font-family:var(--mono);font-size:11px;line-height:1.5;color:#ddd;word-break:break-all}
+    .errlog-entry .errlog-time{font-size:9px;color:var(--smoke-2);margin-bottom:4px}
+    .errlog-entry .errlog-msg{color:#fff}
+    .errlog-empty{text-align:center;padding:40px 14px;color:var(--smoke-2);font-family:var(--mono);font-size:12px}
+    .errlog-badge{position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--danger);display:none}
+    .errlog-badge.has-errors{display:block}
     .spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block}
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
@@ -688,6 +701,13 @@
         <button class="settings-link-btn" id="change-sheet-btn" onclick="showChangeSheet()" style="margin-top:8px;font-size:11px">Change Sheet →</button>
       </div>
       <div class="settings-section"><div class="settings-title">Account</div><button class="btn-secondary" style="width:100%;padding:12px" onclick="signOutPWA()">Sign out &amp; reset</button></div>
+      <div class="settings-section"><div class="settings-title">Debug</div><button class="btn-secondary" style="width:100%;padding:12px;position:relative" onclick="toggleErrLog()">View Error Log<span class="errlog-badge" id="errlog-badge"></span></button></div>
+    </div>
+
+    <!-- ERROR LOG OVERLAY -->
+    <div class="errlog-overlay" id="errlog-overlay">
+      <div class="errlog-header"><span class="errlog-title">Error Log</span><button class="errlog-close" onclick="toggleErrLog()">Close</button></div>
+      <div class="errlog-body" id="errlog-body"><div class="errlog-empty">No errors captured yet.</div></div>
     </div>
 
     <!-- NAV -->
@@ -704,6 +724,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ── ERROR LOG (must be first) ──────────────
+const _errLog=[];
+const _origConsoleError=console.error.bind(console);
+console.error=function(...args){_origConsoleError(...args);_captureError(args.map(a=>a instanceof Error?a.message+'\n'+a.stack:String(a)).join(' '));};
+window.onerror=function(msg,src,line,col,err){_captureError(`${msg}\nat ${src}:${line}:${col}${err?.stack?'\n'+err.stack:''}`);};
+window.onunhandledrejection=function(e){_captureError('Unhandled promise: '+(e.reason?.message||e.reason||'unknown'));};
+function _captureError(msg){const t=new Date().toLocaleTimeString();_errLog.push({time:t,msg});if(_errLog.length>50)_errLog.shift();const badge=document.getElementById('errlog-badge');if(badge)badge.classList.add('has-errors');const body=document.getElementById('errlog-body');if(body&&body.querySelector('.errlog-empty'))body.innerHTML='';if(body){const entry=document.createElement('div');entry.className='errlog-entry';entry.innerHTML=`<div class="errlog-time">${t}</div><div class="errlog-msg">${msg.replace(/</g,'&lt;')}</div>`;body.appendChild(entry);body.scrollTop=body.scrollHeight;}}
+function toggleErrLog(){const o=document.getElementById('errlog-overlay');o.classList.toggle('active');}
+
 // ── CONFIG ──────────────────────────────────
 const CLIENT_ID='1093598922846-a0aib49mg17nj8tp8n7asi8ph3vupbqi.apps.googleusercontent.com';
 const REDIRECT_URI=window.location.origin+window.location.pathname.replace(/\/[^/]*$/,'/');
@@ -718,12 +747,14 @@ const DECAY_WARN=7*86400000, DECAY_BLOCK=10*86400000;
 const S={token:null,tokenExpiry:0,spreadsheetId:null,mode:'work',tasks:[],tags:[],capTags:[],newTagColor:'#D4AF37',filter:'all',ctxOpen:false,phase:null,activeTagFilter:null,ignition:{personal:'',work:''},decayTaskId:null};
 
 // ── INIT ──────────────────────────────────
+function getSheetFromURL(){const p=new URLSearchParams(window.location.search);const s=p.get('sheet');if(s){lss('focus_spreadsheet_id',s);const clean=window.location.pathname+window.location.hash;history.replaceState(null,'',clean);}return s;}
 window.addEventListener('load',async()=>{
   if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  const urlSheet=getSheetFromURL();
   if(window.location.hash.includes('access_token')){handleCallback();return;}
   const tok=ls('focus_token'),exp=parseInt(ls('focus_token_expiry')||'0');
   if(tok&&exp>Date.now()){
-    S.token=tok;S.tokenExpiry=exp;S.spreadsheetId=ls('focus_spreadsheet_id');S.mode=ls('focus_mode')||'work';
+    S.token=tok;S.tokenExpiry=exp;S.spreadsheetId=urlSheet||ls('focus_spreadsheet_id');S.mode=ls('focus_mode')||'work';
     S.ignition={personal:ls('focus_ign_p')||'',work:ls('focus_ign_w')||''};
     if(!S.spreadsheetId){showMain();setupSheet();}
     else{showMain();applyMode(S.mode,false);await loadTags();await loadStats();checkIgnition();}
@@ -764,7 +795,7 @@ function handleCallback(){const h=new URLSearchParams(window.location.hash.slice
 function toggleConnectSheet(){const f=document.getElementById('sheet-id-field'),b=document.getElementById('connect-sheet-btn');const v=f.classList.toggle('visible');b.style.display=v?'block':'none';if(v)f.focus();}
 async function connectExistingSheet(){const id=document.getElementById('sheet-id-field').value.trim();if(!id){showLoginError('Paste your Sheet ID');return;}if(!S.token||S.tokenExpiry<=Date.now()){lss('focus_pending_sheet',id);startLogin();return;}lss('focus_spreadsheet_id',id);S.spreadsheetId=id;showMain();applyMode(S.mode,false);await loadTags();loadStats();checkIgnition();}
 function showLoginError(m){const e=document.getElementById('login-error');e.textContent=m;e.style.display='block';}
-async function sf(url,opts={}){const r=await fetch(url,{...opts,headers:{'Authorization':`Bearer ${S.token}`,'Content-Type':'application/json',...(opts.headers||{})}});if(!r.ok){const e=await r.json().catch(()=>({}));if(r.status===401){localStorage.removeItem('focus_token');localStorage.removeItem('focus_token_expiry');window.location.reload();}throw new Error(e.error?.message||`API error ${r.status}`);}return r.json();}
+async function sf(url,opts={}){if(!S.token){showToast('Not signed in');throw new Error('No auth token');}if(S.tokenExpiry&&Date.now()>=S.tokenExpiry){showToast('Session expired — signing in again…');localStorage.removeItem('focus_token');localStorage.removeItem('focus_token_expiry');setTimeout(()=>startLogin(),1200);throw new Error('Token expired');}let r;try{r=await fetch(url,{...opts,headers:{'Authorization':`Bearer ${S.token}`,'Content-Type':'application/json',...(opts.headers||{})}});}catch(netErr){const msg='Network error: '+netErr.message;showToast(msg);throw new Error(msg);}if(!r.ok){const e=await r.json().catch(()=>({}));const msg=e.error?.message||`API error ${r.status}`;if(r.status===401){showToast('Session expired — signing in again…');localStorage.removeItem('focus_token');localStorage.removeItem('focus_token_expiry');setTimeout(()=>window.location.reload(),1200);throw new Error(msg);}if(r.status===403){showToast('Permission denied: '+msg);}else{showToast('API error: '+msg);}throw new Error(msg);}return r.json();}
 async function setupSheet(){showToast('Setting up your sheet…');try{const r=await sf(SHEETS,{method:'POST',body:JSON.stringify({properties:{title:'Focus — Signal & Noise Tasks'},sheets:[{properties:{sheetId:0,title:'Tasks'}},{properties:{sheetId:1,title:'Weekly Review'}},{properties:{sheetId:2,title:'Tags'}}]})});S.spreadsheetId=r.spreadsheetId;lss('focus_spreadsheet_id',S.spreadsheetId);await sf(`${SHEETS}/${S.spreadsheetId}/values/Tasks!A1:N1?valueInputOption=RAW`,{method:'PUT',body:JSON.stringify({values:[['task_id','task_name','category','signal_or_noise','status','due_date','comment','reason','source','created_date','week_number','days_open','closed_date','tags']]})});const tr=DEFAULT_TAGS.map((n,i)=>[n,TAG_PALETTE[i%TAG_PALETTE.length]]);await sf(`${SHEETS}/${S.spreadsheetId}/values/Weekly Review!A1:N1?valueInputOption=RAW`,{method:'PUT',body:JSON.stringify({values:[['week_number','year','signals_captured','signals_done','noise_captured','noise_done','ignored','delegated','completion','focus_score','streak','reflect_ratio','reflect_hard','reflect_next']]})});await sf(`${SHEETS}/${S.spreadsheetId}/values/Tags!A1:B1?valueInputOption=RAW`,{method:'PUT',body:JSON.stringify({values:[['tag_name','color']]})});await sf(`${SHEETS}/${S.spreadsheetId}/values/Tags!A2:B?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{method:'POST',body:JSON.stringify({values:tr})});showToast('Sheet created!');await loadTags();loadStats();checkIgnition();}catch(e){showToast('Error: '+e.message);}}
 
 // ── TAGS ──────────────────────────────────
