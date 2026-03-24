@@ -672,6 +672,11 @@
         <div class="settings-title">Your sheet</div>
         <div class="settings-info-row" style="margin-bottom:8px"><span class="settings-info-label">Google Sheet</span><button class="settings-link-btn" onclick="openSheet()">Open in Drive →</button></div>
         <div class="settings-info-row"><span class="settings-info-label">Sheet ID</span><span class="settings-info-val" id="s-sheet-id">—</span></div>
+        <div id="change-sheet-wrap" style="margin-top:10px;display:none">
+          <input type="text" class="sheet-id-input visible" id="change-sheet-input" placeholder="Paste Sheet ID or full URL" style="margin-bottom:8px">
+          <div style="display:flex;gap:8px"><button class="btn-secondary" style="flex:1;padding:10px" onclick="cancelChangeSheet()">Cancel</button><button class="btn-secondary" style="flex:1;padding:10px;border-color:var(--copper);color:var(--copper)" onclick="applyChangeSheet()">Connect</button></div>
+        </div>
+        <button class="settings-link-btn" id="change-sheet-btn" onclick="showChangeSheet()" style="margin-top:8px;font-size:11px">Change Sheet →</button>
       </div>
       <div class="settings-section"><div class="settings-title">Account</div><button class="btn-secondary" style="width:100%;padding:12px" onclick="signOutPWA()">Sign out &amp; reset</button></div>
     </div>
@@ -823,6 +828,9 @@ function renderColorPicker(){const row=document.getElementById('s-colors');if(!r
 function addTagPWA(){const inp=document.getElementById('s-new-tag'),name=inp.value.trim();if(!name||S.tags.find(t=>t.name.toLowerCase()===name.toLowerCase()))return;S.tags.push({name,color:S.newTagColor});inp.value='';renderTagManage();renderCapTags();}
 async function saveTagsPWA(){const btn=document.getElementById('s-save-tags');btn.textContent='Saving…';btn.disabled=true;try{await sf(`${SHEETS}/${S.spreadsheetId}/values/Tags!A1:B?valueInputOption=RAW`,{method:'PUT',body:JSON.stringify({values:[['tag_name','color'],...S.tags.map(t=>[t.name,t.color])]})});btn.textContent='✓ Saved';renderCapTags();setTimeout(()=>{btn.textContent='Save tags';btn.disabled=false;},1500);}catch(e){btn.textContent='Save tags';btn.disabled=false;showToast(e.message);}}
 function openSheet(){window.open(`https://docs.google.com/spreadsheets/d/${S.spreadsheetId}`,'_blank');}
+function showChangeSheet(){document.getElementById('change-sheet-wrap').style.display='block';document.getElementById('change-sheet-btn').style.display='none';document.getElementById('change-sheet-input').value='';document.getElementById('change-sheet-input').focus();}
+function cancelChangeSheet(){document.getElementById('change-sheet-wrap').style.display='none';document.getElementById('change-sheet-btn').style.display='block';}
+async function applyChangeSheet(){let v=document.getElementById('change-sheet-input').value.trim();if(!v){showToast('Paste a Sheet ID or URL');return;}const m=v.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);if(m)v=m[1];lss('focus_spreadsheet_id',v);S.spreadsheetId=v;cancelChangeSheet();document.getElementById('s-sheet-id').textContent=v;showToast('Reconnecting…');try{await loadTags();await loadStats();showToast('Connected! '+S.tasks.length+' tasks loaded');}catch(e){showToast('Error: '+e.message);}}
 function signOutPWA(){if(!confirm('Sign out? Your sheet is kept.'))return;['focus_token','focus_token_expiry','focus_spreadsheet_id','focus_mode','focus_last_ign','focus_ign_p','focus_ign_w'].forEach(k=>localStorage.removeItem(k));window.location.reload();}
 
 // ── NAV ──────────────────────────────────
