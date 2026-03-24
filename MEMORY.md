@@ -55,7 +55,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 ### Color Palette
 - **Obsidian:** `#050505` (foundation)
 - **Luminous Copper:** `#D4AF37` (work signal accent)
-- **Moonlight Silver:** `#C0C0C0` (personal accent — note: currently using Zen Violet `#6D5DFE` in code)
+- **Moonlight Silver:** `#C0C0C0` (personal accent — now implemented in code)
 - **Basalt Grey:** `#1A1A1B` (noise/cards)
 - **Aumovio Gradient:** `linear-gradient(135deg, #ff4208, #4827af)` (work armor)
 
@@ -113,6 +113,12 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
   - Strategic debrief narrative
   - Geometric glyph SVG icons for 9 tags
   - Fixed `closeWeekPWA` bracket mismatch
+  - Completed remaining SGNL gaps:
+    - Switched personal accent from Zen Violet to Moonlight Silver (#C0C0C0)
+    - Capture tag chips: 3px radius, no bg fill, small-caps micro-signals
+    - Added small-caps to all `.tag` badges
+    - Personal buttons use silver-bordered obsidian
+  - Created MEMORY.md and CLAUDE.md for session continuity
 
 ---
 
@@ -120,10 +126,10 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 
 ### PWA (`index.html` — single file, ~800 lines)
 - **All 5 screens working:** Capture, Tasks, Ritual, Review, Settings
-- **SGNL branding:** ~85% applied (Phases 1-5 done)
+- **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v4-sgnl`
+- **Cache version:** `focus-v5-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -135,9 +141,9 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 ## Known Issues & Gaps
 
 ### PWA
-- [ ] Personal mode accent is Zen Violet (`#6D5DFE`) not Moonlight Silver (`#C0C0C0`) as specified in final brand doc — user hasn't decided which to keep
-- [ ] Chrono-ticker date selection is standard `<input type="date">` — spec calls for "Scrubbable Timeline" on desktop
-- [ ] Tag chips in capture screen still use rounded pills — should match micro-signal spec (small caps, thin borders)
+- [x] ~~Personal mode accent is Zen Violet~~ — switched to Moonlight Silver `#C0C0C0`
+- [ ] Chrono-ticker date selection is standard `<input type="date">` — spec calls for "Scrubbable Timeline" on desktop (future enhancement)
+- [x] ~~Tag chips in capture screen use rounded pills~~ — fixed to 3px radius, no bg fill, small-caps
 - [ ] No haptic feedback on mobile for toggle/completion (browser API limited)
 - [ ] Phone cache requires manual clear after updates — PWA service worker caching
 
@@ -153,10 +159,10 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 
 ## Next Steps
 
-1. **Complete PWA branding** — resolve remaining gaps listed above
+1. ~~Complete PWA branding~~ — done (17/17 pillars implemented)
 2. **Build Chrome/Edge extension** — full SGNL branding, add to repo under `extension/`
 3. **Test end-to-end** — capture in extension → view on phone → ritual → review
 4. **Deploy PWA update** — merge to main, GitHub Pages auto-deploys
-5. **Future: Moonlight Silver decision** — user to decide if personal mode stays Violet or goes Silver
+5. ~~Moonlight Silver decision~~ — decided: Silver. Implemented.
 6. **Future: Email-to-task** — Gmail first, then Outlook
 7. **Future: Global keyboard shortcut** — nice-to-have, requires companion app
