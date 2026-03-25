@@ -135,7 +135,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Added null safety:** `buildEditPanel` guards against undefined `S.tags`
 - **Added Change Sheet UI:** Settings screen now has "Change Sheet →" button so users can reconnect to a different spreadsheet without needing browser console (critical for mobile)
 - **Improved error surfacing:** `loadStats` and `refreshAll` now show toast messages on failure instead of silently swallowing errors
-- **Switched service worker to network-first:** Assets now served fresh from network with cache as fallback, so phone users get updates immediately without manual cache clearing
+- **Service worker uses cache-first strategy:** Assets served from cache with network fallback for offline resilience; old caches are purged on version bump so updates still propagate
 - **Bumped cache version** to `focus-v9-sgnl`
 
 ### Session 8 (Mar 24) — Robustness & Drive Recovery
@@ -163,6 +163,19 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Friday reminder**: toast notification on Fridays, remembered after closing the week
 - Bumped cache to v16
 
+### Session 9 (Mar 24) — UX Polish & Resilience
+- **Collapsible chrono-ticker:** hidden by default, toggle "show/hide timeline" button (state remembered)
+- **Category edit:** Work↔Personal switch in edit panel (move tasks between modes)
+- **Clean ratios:** "1.0:1" now displays as "1:1"
+- **Radar legend:** Intentionality Map shows green=signal, gold=noise, bigger slice=more tasks
+- **API retry:** auto-retries up to 3× with 1.5s/3s delays on network failures
+- Bumped cache to v17
+
+### Session 10 (Mar 24) — Tags Tab Fix
+- **Auto-create Tags tab:** `loadTags` now creates the Tags tab with defaults if missing (for sheets created before tags feature existed)
+- **Suppressed recoverable errors:** "Unable to parse range" errors no longer show toast when auto-recovery succeeds
+- Bumped cache to v18
+
 ---
 
 ## Current State
@@ -172,7 +185,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v16-sgnl`
+- **Cache version:** `focus-v18-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -186,10 +199,10 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 ### Path 1: Morning Entry
 | What works | What's broken or missing |
 |---|---|
-| Ignition overlay forces intentionality | No time check — shows at 2am too, should only show after 7:00 |
-| Remembers if you already did it today | Daily focus is stored locally only — lost on cache clear |
-| Can skip if in a rush | No summary of yesterday's leftovers before setting focus |
-| | No notification/reminder to open the app |
+| Ignition overlay forces intentionality | Daily focus is stored locally only — lost on cache clear |
+| ~~7am gate~~ (fixed 8b) — only shows after 7:00am | No summary of yesterday's leftovers before setting focus |
+| Remembers if you already did it today | No notification/reminder to open the app |
+| Can skip if in a rush | |
 
 ### Path 2: Creating Tasks (Capture)
 | What works | What's broken or missing |
@@ -198,36 +211,42 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 | Signal as default nudges intentionality | No offline queue — fails if no internet |
 | Tags and due dates work | "Add context" field is hidden — easy to miss |
 | Contextual nudge phrases change by mode | Can't capture from Ignition screen directly |
-| Stats bar shows live ratio | No quick multi-task entry |
+| Stats bar shows live ratio (clean "1:1" format) | No quick multi-task entry |
 
 ### Path 3: Viewing & Completing Tasks
 | What works | What's broken or missing |
 |---|---|
-| Ticker shows most urgent tasks first | No search or text filter |
-| Inline editing is smooth | Can't see personal + work tasks together |
-| Noise decay forces cleanup | Reorder swaps data (not true drag) — risky |
-| Tag filter (ostracize) is powerful | Done section shows ALL done tasks ever — grows forever |
-| Implosion animation feels rewarding | No way to delete a task |
-| | Task list requires internet every time — not cached |
+| Ticker shows most urgent tasks first (collapsible) | Can't see personal + work tasks together |
+| ~~Search bar~~ (fixed 8b) — filters by name or tag | Reorder swaps data (not true drag) — risky |
+| Inline editing smooth + category switch (Session 9) | Task list requires internet every time — not cached |
+| ~~Done section~~ (fixed 8b) — limited to 7 days | |
+| ~~Delete~~ (fixed 8b) — button in edit panel | |
+| Tag filter (ostracize) is powerful | |
+| Implosion animation feels rewarding | |
+| Noise decay forces cleanup | |
 
 ### Path 4: End-of-Day Review (Ritual — Evening)
 | What works | What's broken or missing |
 |---|---|
 | Forces deliberate end-of-day cleanup | "Close the day" doesn't record a daily log in the Sheet |
-| Delegate/ignore with reason builds decision log | Counts ALL done tasks, not just today's |
-| Stats at a glance | If you close the app, unsaved decisions are lost |
-| | Morning ritual is view-only — can't act on carried-over tasks |
-| | No check: "Did you complete your morning focus?" |
+| Delegate/ignore with reason builds decision log | If you close the app, unsaved decisions are lost |
+| ~~Today filter~~ (fixed 8b) — counts only today's done | |
+| ~~Morning focus check~~ (fixed 8b) — shows achievement | |
+| ~~Morning ritual actions~~ (fixed 8b) — can act on tasks | |
+| Stats at a glance | |
 
 ### Path 5: Weekly Review
 | What works | What's broken or missing |
 |---|---|
-| Richest screen — lots of useful data | Focus score counts ALL signals ever, not just this week |
-| Radar chart gives real insight | Close Week writes incomplete data (captured counts = 0) |
-| Debrief narrative adapts to performance | No history — can't look back at previous weeks |
-| Week-over-week comparison | Aging alert dropdowns don't actually update tasks |
-| Reflection prompts are thoughtful | No "it's Friday" reminder |
-| | Reflection fields don't pre-fill from prior weeks |
+| Richest screen — lots of useful data | No history — can't look back at previous weeks |
+| Radar chart with legend (Session 9) | Reflection fields don't pre-fill from prior weeks |
+| ~~Focus score~~ (fixed 8b) — scoped to current week | |
+| ~~Close Week~~ (fixed 8b) — writes actual counts | |
+| ~~Aging alerts~~ (fixed 8b) — wired to update tasks | |
+| ~~Friday reminder~~ (fixed 8b) — toast notification | |
+| Debrief narrative adapts to performance | |
+| Week-over-week comparison | |
+| Reflection prompts are thoughtful | |
 
 ---
 
@@ -236,7 +255,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 ### PWA — Resolved
 - [x] ~~Personal mode accent is Zen Violet~~ — switched to Moonlight Silver
 - [x] ~~Tag chips in capture screen use rounded pills~~ — fixed to 3px radius
-- [x] ~~Phone cache requires manual clear~~ — switched SW to network-first
+- [x] ~~Phone cache requires manual clear~~ — SW uses cache-first with version-based cache purge
 - [x] ~~Edge requires console command to reconnect~~ — has Change Sheet UI now
 - [x] ~~Silent errors on mobile~~ — all errors now show as toasts + Error Log
 - [x] ~~Lost sheet ID = new sheet created~~ — now searches Drive first
