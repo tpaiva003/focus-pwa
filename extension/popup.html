@@ -129,6 +129,11 @@
     <!-- CAPTURE -->
     <div id="screen-capture" class="screen active">
       <div class="capture-scroll">
+        <div class="cap-mode-seg" id="cap-mode-seg">
+          <button class="cap-mode-btn active" data-cmode="task">Task</button>
+          <button class="cap-mode-btn" data-cmode="note">Note</button>
+        </div>
+        <div id="task-form-fields">
         <div class="capture-nudge" id="capture-nudge">What is the primary objective?</div>
         <textarea class="task-textarea" id="cap-text" rows="4" placeholder="What needs to happen?"></textarea>
         <div><div class="field-label">Signal or noise?</div>
@@ -141,6 +146,12 @@
         <div><div class="field-label">Tags <span class="field-opt">(optional)</span></div><div class="tag-chips-wrap" id="cap-tags"></div></div>
         <button class="ctx-toggle" id="ctx-toggle">+ add context</button>
         <textarea class="ctx-textarea" id="ctx-area" rows="3" placeholder="Context, blockers, or anything relevant..."></textarea>
+        </div>
+        <div id="note-form" style="display:none">
+          <div class="capture-nudge" id="note-nudge">Park it here. Decide later.</div>
+          <textarea class="task-textarea" id="note-text" rows="3" placeholder="Quick thought, idea, link, anything..."></textarea>
+        </div>
+        <div id="notes-list" style="display:none"></div>
       </div>
       <div class="capture-footer">
         <div class="stats-bar"><span class="sig" id="sb-sig">0 signals</span><span class="sep">·</span><span class="noi" id="sb-noi">0 noise</span><span class="sep">·</span><span class="rat" id="sb-ratio">ratio —</span></div>
