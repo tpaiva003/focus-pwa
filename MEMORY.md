@@ -135,7 +135,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Added null safety:** `buildEditPanel` guards against undefined `S.tags`
 - **Added Change Sheet UI:** Settings screen now has "Change Sheet →" button so users can reconnect to a different spreadsheet without needing browser console (critical for mobile)
 - **Improved error surfacing:** `loadStats` and `refreshAll` now show toast messages on failure instead of silently swallowing errors
-- **Service worker uses cache-first strategy:** Assets served from cache with network fallback for offline resilience; old caches are purged on version bump so updates still propagate
+- **Switched service worker to network-first:** Assets now served fresh from network with cache as fallback, so phone users get updates immediately without manual cache clearing
 - **Bumped cache version** to `focus-v9-sgnl`
 
 ### Session 8 (Mar 24) — Robustness & Drive Recovery
@@ -163,7 +163,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Friday reminder**: toast notification on Fridays, remembered after closing the week
 - Bumped cache to v16
 
-### Session 9 (Mar 24) — UX Polish & Resilience
+### Session 8c (Mar 24) — UX Polish & Resilience
 - **Collapsible chrono-ticker:** hidden by default, toggle "show/hide timeline" button (state remembered)
 - **Category edit:** Work↔Personal switch in edit panel (move tasks between modes)
 - **Clean ratios:** "1.0:1" now displays as "1:1"
@@ -171,21 +171,51 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **API retry:** auto-retries up to 3× with 1.5s/3s delays on network failures
 - Bumped cache to v17
 
-### Session 10 (Mar 24) — Tags Tab Fix
+### Session 8d (Mar 24) — Tags Tab Fix
 - **Auto-create Tags tab:** `loadTags` now creates the Tags tab with defaults if missing (for sheets created before tags feature existed)
 - **Suppressed recoverable errors:** "Unable to parse range" errors no longer show toast when auto-recovery succeeds
 - Bumped cache to v18
+
+### Session 9 (Mar 25) — Analysis, SW Bug Fix & Performance
+- **Full codebase analysis**: Cross-referenced all 913 lines of `index.html` with MEMORY.md
+- **Fixed service worker bug**: `sw.js` was still cache-first despite Session 7 claiming network-first switch — now actually network-first with cache update on success
+- **Added client-side task caching**: 30-second TTL so switching between screens doesn't re-fetch all tasks from Google Sheets API each time (was making a full API call on every screen navigation)
+- **Cache invalidation**: All mutation points (capture, edit, delete, complete, reorder) invalidate the cache so fresh data is fetched after changes
+- **Bumped cache to v19** (was v18, MEMORY.md said v16)
+- Updated MEMORY.md with accurate current state
+
+### Session 10 (Mar 25) — Notes/Ideas System
+- **New feature: Notes/Ideas parking lot** — lightweight capture for thoughts that aren't tasks yet
+- **Task/Note toggle** on Capture screen — segmented control switches between task and note mode
+- **Note mode**: Minimal capture — just text + auto-category from current mode (personal/work)
+- **Notes list**: Appears below form in note mode, sorted newest first, max 10 with "show all"
+- **Promote to task**: Tap "↑ promote" on any note → switches to task mode with text pre-filled, note marked as promoted after task capture
+- **Archive notes**: Tap "✕ archive" to dismiss notes you no longer need
+- **Google Sheets backend**: New "Notes" sheet (columns: note_id, text, category, status, created_date, promoted_to_task_id)
+- **Auto-migration**: `ensureNotesSheet()` creates Notes tab for existing users on first visit (same pattern as Tags recovery)
+- **New users**: `setupSheet()` now creates Notes sheet alongside Tasks, Weekly Review, Tags
+- **30-second cache**: Notes have their own TTL cache (same as tasks), invalidated on mutations
+- **SGNL brand compliant**: Note text in Instrument Serif Italic, glassmorphism cards, copper/silver accents
+- **Bumped cache to v21**
 
 ---
 
 ## Current State
 
-### PWA (`index.html` — single file, ~900 lines)
-- **All 5 screens working:** Capture, Tasks, Ritual, Review, Settings
+### PWA (`index.html` — single file, ~960 lines)
+- **All 5 screens working:** Capture (with Task/Note toggle), Tasks, Ritual, Review, Settings
+- **Notes/Ideas system**: Capture → Note mode for quick thoughts, promote to tasks later
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v18-sgnl`
+- **Cache version:** `focus-v21-sgnl`
+- **Service worker:** Network-first with cache fallback
+
+### Google Sheets Backend (4 sheets)
+- **Tasks** — A:N (task_id through tags)
+- **Weekly Review** — A:N (week stats and reflections)
+- **Tags** — A:B (tag_name, color)
+- **Notes** — A:F (note_id, text, category, status, created_date, promoted_to_task_id)
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -255,7 +285,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 ### PWA — Resolved
 - [x] ~~Personal mode accent is Zen Violet~~ — switched to Moonlight Silver
 - [x] ~~Tag chips in capture screen use rounded pills~~ — fixed to 3px radius
-- [x] ~~Phone cache requires manual clear~~ — SW uses cache-first with version-based cache purge
+- [x] ~~Phone cache requires manual clear~~ — switched SW to network-first
 - [x] ~~Edge requires console command to reconnect~~ — has Change Sheet UI now
 - [x] ~~Silent errors on mobile~~ — all errors now show as toasts + Error Log
 - [x] ~~Lost sheet ID = new sheet created~~ — now searches Drive first
