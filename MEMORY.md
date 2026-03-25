@@ -163,16 +163,25 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Friday reminder**: toast notification on Fridays, remembered after closing the week
 - Bumped cache to v16
 
+### Session 9 (Mar 25) — Analysis, SW Bug Fix & Performance
+- **Full codebase analysis**: Cross-referenced all 913 lines of `index.html` with MEMORY.md
+- **Fixed service worker bug**: `sw.js` was still cache-first despite Session 7 claiming network-first switch — now actually network-first with cache update on success
+- **Added client-side task caching**: 30-second TTL so switching between screens doesn't re-fetch all tasks from Google Sheets API each time (was making a full API call on every screen navigation)
+- **Cache invalidation**: All mutation points (capture, edit, delete, complete, reorder) invalidate the cache so fresh data is fetched after changes
+- **Bumped cache to v19** (was v18, MEMORY.md said v16)
+- Updated MEMORY.md with accurate current state
+
 ---
 
 ## Current State
 
-### PWA (`index.html` — single file, ~900 lines)
+### PWA (`index.html` — single file, ~915 lines)
 - **All 5 screens working:** Capture, Tasks, Ritual, Review, Settings
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v16-sgnl`
+- **Cache version:** `focus-v19-sgnl`
+- **Service worker:** Network-first with cache fallback
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
