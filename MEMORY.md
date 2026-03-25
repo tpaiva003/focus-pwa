@@ -171,17 +171,38 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Bumped cache to v19** (was v18, MEMORY.md said v16)
 - Updated MEMORY.md with accurate current state
 
+### Session 10 (Mar 25) — Notes/Ideas System
+- **New feature: Notes/Ideas parking lot** — lightweight capture for thoughts that aren't tasks yet
+- **Task/Note toggle** on Capture screen — segmented control switches between task and note mode
+- **Note mode**: Minimal capture — just text + auto-category from current mode (personal/work)
+- **Notes list**: Appears below form in note mode, sorted newest first, max 10 with "show all"
+- **Promote to task**: Tap "↑ promote" on any note → switches to task mode with text pre-filled, note marked as promoted after task capture
+- **Archive notes**: Tap "✕ archive" to dismiss notes you no longer need
+- **Google Sheets backend**: New "Notes" sheet (columns: note_id, text, category, status, created_date, promoted_to_task_id)
+- **Auto-migration**: `ensureNotesSheet()` creates Notes tab for existing users on first visit (same pattern as Tags recovery)
+- **New users**: `setupSheet()` now creates Notes sheet alongside Tasks, Weekly Review, Tags
+- **30-second cache**: Notes have their own TTL cache (same as tasks), invalidated on mutations
+- **SGNL brand compliant**: Note text in Instrument Serif Italic, glassmorphism cards, copper/silver accents
+- **Bumped cache to v21**
+
 ---
 
 ## Current State
 
-### PWA (`index.html` — single file, ~915 lines)
-- **All 5 screens working:** Capture, Tasks, Ritual, Review, Settings
+### PWA (`index.html` — single file, ~960 lines)
+- **All 5 screens working:** Capture (with Task/Note toggle), Tasks, Ritual, Review, Settings
+- **Notes/Ideas system**: Capture → Note mode for quick thoughts, promote to tasks later
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v19-sgnl`
+- **Cache version:** `focus-v21-sgnl`
 - **Service worker:** Network-first with cache fallback
+
+### Google Sheets Backend (4 sheets)
+- **Tasks** — A:N (task_id through tags)
+- **Weekly Review** — A:N (week stats and reflections)
+- **Tags** — A:B (tag_name, color)
+- **Notes** — A:F (note_id, text, category, status, created_date, promoted_to_task_id)
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
