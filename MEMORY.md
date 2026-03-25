@@ -163,6 +163,14 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Friday reminder**: toast notification on Fridays, remembered after closing the week
 - Bumped cache to v16
 
+### Session 9 (Mar 25) — Tags Tab Auto-Creation
+- **Fixed "Unable to parse range: Tags!A2:B" error** — Google Sheet was missing a Tags tab (created before tags feature existed)
+- `loadTags()` now auto-creates the Tags tab with 9 default tags + colors if it doesn't exist
+- Suppressed "Unable to parse range" toast in `sf()` since it's now handled gracefully
+- Collapsible ticker, category edit, clean ratios, radar hint, API retry were merged from previous work
+- Bumped cache to v18
+- Merged PR #10 to main
+
 ---
 
 ## Current State
@@ -172,7 +180,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v16-sgnl`
+- **Cache version:** `focus-v18-sgnl`
 
 ### Extension (NOT in this repo)
 - Was delivered as zip files in previous sessions
@@ -240,6 +248,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - [x] ~~Edge requires console command to reconnect~~ — has Change Sheet UI now
 - [x] ~~Silent errors on mobile~~ — all errors now show as toasts + Error Log
 - [x] ~~Lost sheet ID = new sheet created~~ — now searches Drive first
+- [x] ~~"Unable to parse range: Tags!A2:B" error~~ — auto-creates Tags tab if missing
 
 ### PWA — Open
 - [x] ~~Ignition shows at any hour~~ — now gated to after 7:00am
