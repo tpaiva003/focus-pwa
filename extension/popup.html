@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div id="app" class="work">
+
+  <!-- IGNITION OVERLAY -->
+  <div class="ignition-overlay" id="ignition-overlay">
+    <div class="ignition-mark">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <defs>
+          <radialGradient id="ig"><stop offset="0%" stop-color="#D4AF37" stop-opacity="0.85"/><stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/></radialGradient>
+          <filter id="ib"><feGaussianBlur stdDeviation="6"/></filter>
+          <linearGradient id="ibg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#B89018"/><stop offset="40%" stop-color="#EDD060"/><stop offset="60%" stop-color="#EDD060"/><stop offset="100%" stop-color="#A07010"/></linearGradient>
+        </defs>
+        <circle cx="28" cy="32" r="18" fill="url(#ig)" filter="url(#ib)"/>
+        <rect x="24.5" y="7" width="7" height="42" rx="2" fill="url(#ibg)"/>
+      </svg>
+    </div>
+    <div class="ignition-title">Good morning.</div>
+    <div class="ignition-sub">Set your two signals before the day begins.</div>
+    <div class="ignition-inputs">
+      <div class="ignition-field">
+        <div class="ignition-field-label pl">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4.5" r="2.5" fill="currentColor"/><path d="M2 12c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          Personal focus
+        </div>
+        <input class="ignition-input" id="ign-personal" type="text" placeholder="One thing that matters to you today…" maxlength="120">
+      </div>
+      <div class="ignition-field">
+        <div class="ignition-field-label wk">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="4.5" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M5 4.5V3a1 1 0 011-1h2a1 1 0 011 1v1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
+          Work focus
+        </div>
+        <input class="ignition-input" id="ign-work" type="text" placeholder="The primary professional signal…" maxlength="120">
+      </div>
+    </div>
+    <div class="ignition-error" id="ign-error"></div>
+    <button class="ignition-cta" id="ign-cta">Begin the day</button>
+    <button class="ignition-skip" id="ign-skip">Skip today — continue without focus setting</button>
+  </div>
+
+  <!-- DECAY MODAL -->
+  <div class="decay-overlay" id="decay-overlay">
+    <div class="decay-modal">
+      <div class="decay-eyebrow">⚠ Noise Ledger — 10-Day Threshold</div>
+      <div class="decay-title">This task has persisted without resolution.</div>
+      <div class="decay-sub">Noise that lingers without a decision consumes attention. Substantiate or archive it.</div>
+      <div class="decay-task-name" id="decay-task-name">—</div>
+      <div class="decay-days" id="decay-task-days"></div>
+      <textarea class="decay-textarea" id="decay-reason" rows="3" placeholder="Why has this persisted? What does keeping it cost you?"></textarea>
+      <div class="decay-actions">
+        <button class="decay-archive" id="decay-archive-btn">Archive to Ledger</button>
+        <button class="decay-keep" id="decay-keep-btn">Keep open</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="screen-login" class="screen active">
+    <div class="login-logo-wrap">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <defs>
+          <radialGradient id="lg"><stop offset="0%" stop-color="#D4AF37" stop-opacity="0.85"/><stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/></radialGradient>
+          <filter id="lb"><feGaussianBlur stdDeviation="6"/></filter>
+          <linearGradient id="lbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#B89018"/><stop offset="40%" stop-color="#EDD060"/><stop offset="60%" stop-color="#EDD060"/><stop offset="100%" stop-color="#A07010"/></linearGradient>
+        </defs>
+        <circle cx="28" cy="32" r="18" fill="url(#lg)" filter="url(#lb)"/>
+        <rect x="24.5" y="7" width="7" height="42" rx="2" fill="url(#lbg)"/>
+      </svg>
+      <div class="login-logo">FOCUS: SGNL</div>
+      <div class="login-logo-sub">Architecture for Attention</div>
+    </div>
+    <div>
+      <div class="login-title" style="font-size:22px">Your attention,<br>defended.</div>
+      <div class="login-sub" style="margin-top:6px">Chrome + Edge extension. Syncs to your Google Sheet.</div>
+    </div>
+    <div class="login-perms">
+      <div class="login-perm"><div class="perm-dot"></div>Reads and writes to your Focus Google Sheet only</div>
+      <div class="login-perm"><div class="perm-dot"></div>Never accesses email or other Drive files</div>
+      <div class="login-perm"><div class="perm-dot"></div>Same data as your PWA and other browsers</div>
+    </div>
+    <button class="btn-login" id="login-btn">
+      <svg width="16" height="16" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <button class="connect-existing" id="connect-existing-btn">Already have a sheet? Connect it →</button>
+    <input type="text" class="sheet-id-input" id="sheet-id-field" placeholder="Paste your Sheet ID here…">
+    <button id="connect-sheet-btn">Connect this sheet</button>
+    <div id="login-error"></div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main-app" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="topbar"></div>
+    <div class="header">
+      <div class="header-left">
+        <div class="header-mark">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <defs>
+              <radialGradient id="hg"><stop offset="0%" stop-color="#D4AF37" stop-opacity="0.75"/><stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/></radialGradient>
+              <filter id="hb"><feGaussianBlur stdDeviation="3"/></filter>
+              <linearGradient id="hbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C09020"/><stop offset="40%" stop-color="#EDD060"/><stop offset="60%" stop-color="#EDD060"/><stop offset="100%" stop-color="#B08010"/></linearGradient>
+            </defs>
+            <circle cx="11" cy="13" r="7" fill="url(#hg)" filter="url(#hb)"/>
+            <rect x="9" y="2" width="4" height="18" rx="1.2" fill="url(#hbg)"/>
+          </svg>
+        </div>
+        <div class="header-brand">
+          <span class="header-title">FOCUS: SGNL</span>
+          <span class="ctx-label" id="ctx-label">work</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" id="refresh-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 8A5.5 5.5 0 112.5 5M2.5 2v3h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="mode-toggle">
+          <div class="toggle-ico p"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4.5" r="2.5" fill="currentColor"/><path d="M2 12c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div>
+          <div class="toggle-track" id="mode-track"><div class="toggle-thumb" id="mode-thumb"></div></div>
+          <div class="toggle-ico w"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="4.5" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M5 4.5V3a1 1 0 011-1h2a1 1 0 011 1v1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/><line x1="1.5" y1="8" x2="12.5" y2="8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPTURE -->
+    <div id="screen-capture" class="screen active">
+      <div class="capture-scroll">
+        <div class="capture-nudge" id="capture-nudge">What is the primary objective?</div>
+        <textarea class="task-textarea" id="cap-text" rows="4" placeholder="What needs to happen?"></textarea>
+        <div><div class="field-label">Signal or noise?</div>
+          <div class="sn-seg" id="cap-sn">
+            <button class="sn-btn sig-on" data-val="signal">▲ Signal</button>
+            <button class="sn-btn" data-val="noise">~ Noise</button>
+          </div>
+        </div>
+        <div><div class="field-label">Due date <span class="field-opt">(optional)</span></div><input type="date" class="due-input" id="cap-due"></div>
+        <div><div class="field-label">Tags <span class="field-opt">(optional)</span></div><div class="tag-chips-wrap" id="cap-tags"></div></div>
+        <button class="ctx-toggle" id="ctx-toggle">+ add context</button>
+        <textarea class="ctx-textarea" id="ctx-area" rows="3" placeholder="Context, blockers, or anything relevant..."></textarea>
+      </div>
+      <div class="capture-footer">
+        <div class="stats-bar"><span class="sig" id="sb-sig">0 signals</span><span class="sep">·</span><span class="noi" id="sb-noi">0 noise</span><span class="sep">·</span><span class="rat" id="sb-ratio">ratio —</span></div>
+        <button class="btn-primary" id="cap-btn">Capture task</button>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="screen-tasks" class="screen">
+      <div class="chrono-ticker-wrap" id="ticker-wrap" style="display:none"><div class="chrono-ticker" id="chrono-ticker"></div></div>
+      <div style="padding:4px 14px 0;display:flex;justify-content:flex-end"><button id="ticker-toggle" style="background:none;border:none;font-size:10px;font-family:var(--mono);color:var(--smoke);cursor:pointer;padding:2px 6px">show timeline</button></div>
+      <div class="tasks-stats"><div class="ts-card s"><div class="ts-num" id="ts-sig">0</div><div class="ts-lbl">signals</div></div><div class="ts-card n"><div class="ts-num" id="ts-noi">0</div><div class="ts-lbl">noise</div></div><div class="ts-card d"><div class="ts-num" id="ts-done">0</div><div class="ts-lbl">done</div></div><div class="ts-card r"><div class="ts-num" id="ts-ratio">—</div><div class="ts-lbl">ratio</div></div></div>
+      <div class="tag-filter-bar" id="tag-filter-bar"><span id="tag-filter-label">· filtering</span><span>✕ clear</span></div>
+      <div style="padding:6px 14px 0"><input type="text" id="task-search" placeholder="Search tasks…" style="width:100%;padding:8px 12px;border-radius:8px;border:0.5px solid var(--basalt-2);background:var(--void-3);color:#fff;font-family:var(--sans);font-size:13px;outline:none"></div>
+      <div class="tasks-tabs"><button class="tasks-tab active" data-f="all">All</button><button class="tasks-tab" data-f="signal">Signals</button><button class="tasks-tab" data-f="noise">Noise</button></div>
+      <div class="tasks-list" id="tasks-list"><div class="loading-text">Loading…</div></div>
+      <div class="tasks-footer"><div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div><div class="prog-label" id="prog-label">0 done</div></div>
+    </div>
+
+    <!-- RITUAL -->
+    <div id="screen-ritual" class="screen">
+      <div class="ritual-phase-toggle">
+        <button class="rpt-btn active" id="rpt-morning" data-phase="morning">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M3.05 3.05l1.06 1.06M9.9 9.9l1.06 1.06M3.05 10.95l1.06-1.06M9.9 4.1l1.06-1.06" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Morning
+        </button>
+        <button class="rpt-btn" id="rpt-evening" data-phase="evening">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M11.5 9A5 5 0 016 3.5a5 5 0 100 10 5 5 0 005.5-4.5z" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+          Evening
+        </button>
+      </div>
+      <div class="ritual-hero">
+        <div class="ritual-hero-top"><span class="ritual-time" id="ritual-time"></span><span class="phase-pill" id="ritual-pill">Morning open</span></div>
+        <div class="ritual-title" id="ritual-title">Good morning.</div>
+        <div class="ritual-sub" id="ritual-sub">Set your focus for today.</div>
+        <div class="ritual-hero-line"></div>
+      </div>
+      <div class="ritual-body" id="ritual-body"></div>
+      <div style="padding:0 14px 14px;margin-top:auto;flex-shrink:0"><button class="btn-primary" id="ritual-cta">Start the day</button></div>
+    </div>
+
+    <!-- REVIEW -->
+    <div id="screen-review" class="screen">
+      <div class="ritual-hero" style="flex-shrink:0">
+        <div class="ritual-hero-top"><span class="ritual-time" id="review-date"></span><span class="phase-pill" style="background:var(--au-gradient);color:#fff;border:none">Friday review</span></div>
+        <div class="ritual-title">Week in review.</div>
+        <div class="ritual-sub">A mirror, not a report.</div>
+        <div class="ritual-hero-line"></div>
+      </div>
+      <div class="fr-tabs">
+        <button class="fr-tab active" data-p="trend">Trend</button>
+        <button class="fr-tab" data-p="tags">Tags</button>
+        <button class="fr-tab" data-p="compare">vs last wk</button>
+        <button class="fr-tab" data-p="open">Open</button>
+        <button class="fr-tab" data-p="reflect">Reflect</button>
+      </div>
+      <div class="fr-panel active" id="fr-trend">
+        <div class="debrief-narrative" id="debrief-narrative" style="padding:14px;border-radius:10px;border:0.5px solid var(--basalt-2);background:rgba(26,26,27,.5);backdrop-filter:blur(16px);font-family:var(--serif);font-style:italic;font-size:14px;color:var(--smoke);line-height:1.7;display:none"></div>
+        <div class="focus-score-ring"><div class="focus-score-num" id="fr-score">—</div><div class="focus-score-label">Focus Score</div><div class="focus-score-sub" id="fr-score-sub">signals finished / total</div></div>
+        <div><div class="fr-section-label">Intentionality Map — signal vs noise by tag</div>
+          <div class="chart-card" style="padding:14px"><div style="display:flex;gap:12px;justify-content:center;margin-bottom:8px;font-size:9px;font-family:var(--mono);color:var(--smoke)"><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(34,197,94,.5);vertical-align:middle;margin-right:3px"></span>signal</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(212,175,55,.5);vertical-align:middle;margin-right:3px"></span>noise</span><span>bigger slice = more tasks</span></div><div class="radar-wrap"><div class="sonar-pulse"><div class="sonar-ring"></div><div class="sonar-ring"></div><div class="sonar-ring"></div></div><canvas id="radar-canvas" width="320" height="220"></canvas></div><div class="radar-legend" id="radar-legend"></div></div>
+        </div>
+        <div><div class="fr-section-label">Week at a glance</div>
+          <div class="stats-grid">
+            <div class="sg-card s"><div class="sg-num" id="fr-sd">0</div><div class="sg-label">signals done</div></div>
+            <div class="sg-card n"><div class="sg-num" id="fr-nd">0</div><div class="sg-label">noise done</div></div>
+            <div class="sg-card d"><div class="sg-num" id="fr-comp">0%</div><div class="sg-label">completion</div></div>
+            <div class="sg-card ig"><div class="sg-num" id="fr-ign">0</div><div class="sg-label">ignored</div></div>
+            <div class="sg-card dl"><div class="sg-num" id="fr-del">0</div><div class="sg-label">delegated</div></div>
+            <div class="sg-card st"><div class="sg-num" id="fr-str">0</div><div class="sg-label">streak</div></div>
+          </div>
+        </div>
+        <div><div class="fr-section-label">Noise resolution</div>
+          <div class="noise-breakdown">
+            <div class="nb-row"><span class="nb-lbl">closed</span><div class="nb-track"><div class="nb-fill done" id="nb-done" style="width:0%"></div></div><span class="nb-val" id="nb-done-val">0</span></div>
+            <div class="nb-row"><span class="nb-lbl">delegated</span><div class="nb-track"><div class="nb-fill del" id="nb-del" style="width:0%"></div></div><span class="nb-val" id="nb-del-val">0</span></div>
+            <div class="nb-row"><span class="nb-lbl">ignored</span><div class="nb-track"><div class="nb-fill ign" id="nb-ign" style="width:0%"></div></div><span class="nb-val" id="nb-ign-val">0</span></div>
+            <div class="nb-row"><span class="nb-lbl">carried</span><div class="nb-track"><div class="nb-fill carry" id="nb-carry" style="width:0%"></div></div><span class="nb-val" id="nb-carry-val">0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-panel" id="fr-tags"><div><div class="fr-section-label">Tasks by tag</div><div class="tag-review-list" id="fr-tag-chart"></div></div><div><div class="fr-section-label">Completion by tag</div><div class="tag-review-list" id="fr-tag-bd"></div></div></div>
+      <div class="fr-panel" id="fr-compare"><div class="fr-section-label">This week vs last week</div><div id="fr-compare-grid"><div class="loading-text">Loading…</div></div></div>
+      <div class="fr-panel" id="fr-open">
+        <div><div class="fr-section-label">Aging signals</div><div id="fr-aging-sig" style="display:flex;flex-direction:column;gap:6px"><div class="empty-state"><strong>All clear</strong></div></div></div>
+        <div><div class="fr-section-label">Noise — overdue for a decision</div><div id="fr-aging-noi" style="display:flex;flex-direction:column;gap:6px"><div class="empty-state"><strong>All clear</strong></div></div></div>
+      </div>
+      <div class="fr-panel" id="fr-reflect">
+        <div class="reflect-card">
+          <div class="reflect-q">Did you spend your time on what actually matters?</div>
+          <div class="reflect-hint-text">Your ratio is not a grade. It is information.</div>
+          <textarea class="reflect-input" id="ref-ratio" rows="2" placeholder="What your ratio reveals this week..."></textarea>
+          <div class="reflect-divider"></div>
+          <div class="reflect-q">What was your hardest decision?</div>
+          <div class="reflect-hint-text">The things you ignored often reveal more than what you completed.</div>
+          <textarea class="reflect-input" id="ref-hard" rows="2" placeholder="A decision, a trade-off, something you released..."></textarea>
+          <div class="reflect-divider"></div>
+          <div class="reflect-q">What is the one signal for next week?</div>
+          <div class="reflect-hint-text">Not a list. One thing.</div>
+          <textarea class="reflect-input" id="ref-next" rows="2" placeholder="Next week's primary signal..."></textarea>
+        </div>
+      </div>
+      <div style="padding:0 14px 14px;margin-top:auto;flex-shrink:0"><button class="btn-primary" id="fr-close-btn">Close week</button></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="screen-settings" class="screen" style="overflow-y:auto">
+      <div class="settings-section">
+        <div class="settings-title">Today's focus signals</div>
+        <div class="settings-focus-row" style="margin-bottom:8px"><div class="settings-focus-label pl">Personal</div><div class="settings-focus-val" id="s-personal-focus">—</div></div>
+        <div class="settings-focus-row"><div class="settings-focus-label wk">Work</div><div class="settings-focus-val" id="s-work-focus">—</div></div>
+        <button class="btn-secondary" id="reset-ignition-btn" style="margin-top:10px;width:100%;padding:10px">Reset today's ignition</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">Tags</div>
+        <div class="tag-manage-list" id="s-tag-list"></div>
+        <div class="add-tag-row"><input class="add-tag-input" id="s-new-tag" placeholder="New tag name…" maxlength="30"><button class="btn-sm primary" id="add-tag-btn">Add</button></div>
+        <div class="color-picker-row" id="s-colors"></div>
+        <button class="btn-primary" style="margin-top:12px" id="s-save-tags">Save tags</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">Your sheet</div>
+        <div class="settings-info-row" style="margin-bottom:8px"><span class="settings-info-label">Google Sheet</span><button class="settings-link-btn" id="open-sheet-btn">Open in Drive →</button></div>
+        <div class="settings-info-row"><span class="settings-info-label">Sheet ID</span><span class="settings-info-val" id="s-sheet-id">—</span></div>
+        <div id="change-sheet-wrap" style="margin-top:10px;display:none">
+          <input type="text" class="sheet-id-input visible" id="change-sheet-input" placeholder="Paste Sheet ID or full URL" style="margin-bottom:8px">
+          <div style="display:flex;gap:8px"><button class="btn-secondary" id="cancel-change-btn" style="flex:1;padding:10px">Cancel</button><button class="btn-secondary" id="apply-change-btn" style="flex:1;padding:10px;border-color:var(--copper);color:var(--copper)">Connect</button></div>
+        </div>
+        <button class="settings-link-btn" id="change-sheet-btn" style="margin-top:8px;font-size:11px">Change Sheet →</button>
+      </div>
+      <div class="settings-section"><div class="settings-title">Account</div><button class="btn-secondary" id="signout-btn" style="width:100%;padding:12px">Sign out &amp; reset</button></div>
+      <div class="settings-section"><div class="settings-title">Debug</div><button class="btn-secondary" id="errlog-btn" style="width:100%;padding:12px;position:relative">View Error Log<span class="errlog-badge" id="errlog-badge"></span></button></div>
+    </div>
+
+    <!-- ERROR LOG OVERLAY -->
+    <div class="errlog-overlay" id="errlog-overlay">
+      <div class="errlog-header"><span class="errlog-title">Error Log</span><button class="errlog-close" id="errlog-close">Close</button></div>
+      <div class="errlog-body" id="errlog-body"><div class="errlog-empty">No errors captured yet.</div></div>
+    </div>
+
+    <!-- NAV -->
+    <div class="bottom-nav">
+      <button class="nav-btn active" data-s="capture"><svg width="19" height="19" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>capture</span></button>
+      <button class="nav-btn" data-s="tasks"><svg width="19" height="19" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h10M3 11h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>tasks</span></button>
+      <button class="nav-btn" data-s="ritual"><svg width="19" height="19" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>ritual</span></button>
+      <button class="nav-btn" data-s="review"><svg width="19" height="19" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>review</span></button>
+      <button class="nav-btn" data-s="settings"><svg width="19" height="19" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>settings</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="popup.js"></script>
+</body>
+</html>

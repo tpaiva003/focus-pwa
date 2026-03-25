@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "FOCUS: SGNL",
+  "version": "4.0",
+  "description": "Strategic attention-defense tool — Signal vs Noise methodology",
+  "permissions": [
+    "identity",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://sheets.googleapis.com/*",
+    "https://www.googleapis.com/*",
+    "https://accounts.google.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "oauth2": {
+    "client_id": "1093598922846-a0aib49mg17nj8tp8n7asi8ph3vupbqi.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file"
+    ]
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkSqNj/AOBQ4Eih9DYcG5i6dBZGhGqbuXsixNmCKumqWEBQ0FUrcGJ2WIQBE0GnBB+aJ9WkGixN6v5Ek1GJWVr/PJ/p9E3eJlPfMJCFCEG+k9CQsZhBi9wiGjJG0ZkWhbXNT0l9RNpf/Z8IYv8urb0vYfY0qwKqFeOwuCPBlr9bfpOxImO0+b/3Fs+05ESaF0mcj0ZqJbtkBxVN3Fjc4UjJEFYfnhSFrwBaTr3GasPR3kZt0USwg6RmG/DVfYFh+BNMl1JMsRjHphCgMVqXhOE8z1EB4VhFz3MnQnfUGwJBhmQWa4MA6VT7w41SM2pPbIaExaFzOfsFO2f/5S0gQIDAQAB"
+}
