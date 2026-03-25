@@ -902,7 +902,7 @@ function triggerFlash(type){const app=document.getElementById('app');app.classLi
 function div(cls){const e=document.createElement('div');if(cls)e.className=cls;return e;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function todayStr(){return new Date().toISOString().split('T')[0];}
-function fmtRatio(s,n){if(n===0)return s>0?`${s}:0`:'—';const r=s/n;return(r===Math.floor(r)?r.toString():r.toFixed(1))+':1';}
+function fmtRatio(s,n){if(s===0&&n===0)return'—';return`${s}:${n}`;}
 function toggleTicker(){const w=document.getElementById('ticker-wrap'),b=document.getElementById('ticker-toggle');const show=w.style.display==='none';w.style.display=show?'':'none';b.textContent=show?'hide timeline':'show timeline';lss('focus_ticker_visible',show?'1':'0');}
 function weekNum(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+4-(d.getDay()||7));const y=new Date(d.getFullYear(),0,1);return Math.ceil((((d-y)/86400000)+1)/7);}
 function daysAgo(s){if(!s)return 0;return Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/86400000));}
