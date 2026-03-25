@@ -127,8 +127,8 @@
     .stats-bar{display:flex;align-items:center;gap:8px;font-size:11px;font-family:var(--mono);margin-bottom:10px}
     .stats-bar .sig{color:var(--signal)} .stats-bar .noi{color:var(--copper)} .stats-bar .sep{color:var(--basalt-3)} .stats-bar .rat{color:var(--smoke-2)}
     /* CAPTURE MODE TOGGLE */
-    .cap-mode-seg{display:flex;border-radius:8px;overflow:hidden;border:0.5px solid var(--basalt-2);margin-bottom:4px}
-    .cap-mode-btn{flex:1;padding:8px;font-size:11px;font-family:var(--mono);letter-spacing:.04em;cursor:pointer;border:none;background:rgba(17,17,17,.85);color:var(--smoke-2);transition:all .2s;-webkit-tap-highlight-color:transparent}
+    .cap-mode-seg{display:flex!important;border-radius:8px;overflow:hidden;border:0.5px solid var(--basalt-2);margin-bottom:4px;min-height:36px;flex-shrink:0}
+    .cap-mode-btn{flex:1;padding:8px;font-size:11px;font-family:var(--mono);letter-spacing:.04em;cursor:pointer;border:none;background:rgba(17,17,17,.85);color:var(--smoke-2);transition:background .2s,color .2s;-webkit-tap-highlight-color:transparent}
     .work .cap-mode-btn.active{background:rgba(212,175,55,.08);color:var(--copper)}
     .personal .cap-mode-btn.active{background:rgba(192,192,192,.08);color:var(--zen)}
     /* NOTES LIST */
