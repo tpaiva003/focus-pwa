@@ -198,17 +198,30 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **SGNL brand compliant**: Note text in Instrument Serif Italic, glassmorphism cards, copper/silver accents
 - **Bumped cache to v21**
 
+### Session 11 (Mar 28) — Extension Build & PWA Bug Fix
+- **Fixed PWA capture toggle bug:** Task/Note segmented control had `transition:all .2s` causing CSS flash on mobile — changed to `transition:background .2s,color .2s`, added `min-height:36px` and `flex-shrink:0`
+- **Built Chrome extension with full SGNL branding** — complete rebuild in `extension/` directory:
+  - Self-contained `popup.html` (inline CSS + JS, ~993 lines)
+  - Full feature parity with PWA: all 5 screens, notes system, task/note toggle, edit panel, ritual, review, radar chart
+  - All 17 SGNL branding pillars applied
+  - OAuth via `chrome.identity.launchWebAuthFlow` (background.js)
+  - Uses `localStorage` in popup (synchronous) with `chrome.storage.local` fallback for token persistence
+  - Extension-specific: `position:absolute` instead of `fixed`, 400×600px popup dimensions, no SW registration
+  - Task source tagged as 'extension' (vs 'mobile' for PWA)
+  - Generated icon PNGs (16, 48, 128) with gold bar motif
+- **Bumped SW cache to v26**
+
 ---
 
 ## Current State
 
-### PWA (`index.html` — single file, ~960 lines)
+### PWA (`index.html` — single file, ~975 lines)
 - **All 5 screens working:** Capture (with Task/Note toggle), Tasks, Ritual, Review, Settings
 - **Notes/Ideas system**: Capture → Note mode for quick thoughts, promote to tasks later
 - **SGNL branding:** ~97% applied (all 17 pillars implemented, minor polish remaining)
 - **JS syntax:** Verified clean
 - **Deployed at:** `https://tpaiva003.github.io/focus-pwa/`
-- **Cache version:** `focus-v21-sgnl`
+- **Cache version:** `focus-v26-sgnl`
 - **Service worker:** Network-first with cache fallback
 
 ### Google Sheets Backend (4 sheets)
@@ -217,10 +230,13 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - **Tags** — A:B (tag_name, color)
 - **Notes** — A:F (note_id, text, category, status, created_date, promoted_to_task_id)
 
-### Extension (NOT in this repo)
-- Was delivered as zip files in previous sessions
-- Last version: v3.1 with chart fixes
-- **Needs complete rebuild** with full SGNL branding parity
+### Chrome Extension (`extension/` — in this repo)
+- **Files:** `manifest.json`, `background.js`, `popup.html`, icon16/48/128.png
+- **Full parity** with PWA (all 5 screens, notes, task/note toggle, edit, ritual, review, radar chart, tags)
+- **SGNL branded:** All 17 pillars applied
+- **Auth:** `chrome.identity.launchWebAuthFlow` via background.js
+- **Extension ID:** `djekfkhipiiaioakffkebjhnoojkbkpa` (Chrome + Edge)
+- **To install:** Load unpacked from `extension/` folder in chrome://extensions
 
 ---
 
@@ -306,7 +322,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 - [ ] No "daily log" row saved in Sheet (decision log exists via task updates)
 
 ### Extension
-- [ ] Not yet rebuilt with SGNL branding in this repo
+- [x] ~~Not yet rebuilt with SGNL branding~~ — rebuilt in `extension/` with full parity (Session 11)
 
 ### Data/Backend
 - [ ] No offline capture support (PWA stores nothing locally)
@@ -319,6 +335,7 @@ The brand spec was designed with Gemini and defines FOCUS: SGNL as a "Strategic 
 
 ### Remaining — Nice to have
 1. **Offline capture queue** — save locally, sync when online
-2. **Build Chrome/Edge extension** with SGNL branding
+2. ~~**Build Chrome/Edge extension** with SGNL branding~~ — DONE (Session 11)
 3. **Daily log row** in Sheet (decisions already saved via task updates)
 4. **Future: Email-to-task** (Gmail first, then Outlook)
+5. **Extension: higher-res icons** — replace generated PNGs with designed icons
